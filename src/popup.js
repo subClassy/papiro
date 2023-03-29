@@ -26,6 +26,7 @@ function removeItem(event) {
 function createListItem(title, url) {
   const listItem = document.createElement("li");
   const itemInfo = document.createElement("div");
+  const itemAnchor = document.createElement("a")
   const itemTitle = document.createElement("span");
   const itemDomain = document.createElement("span");
   const itemRemove = document.createElement("span");
@@ -39,13 +40,19 @@ function createListItem(title, url) {
     itemDomain.classList.add("item-domain");
   }
 
-  itemRemove.textContent = "X";
+  // itemRemove.textContent = "X";
   itemRemove.classList.add("item-remove");
   itemRemove.addEventListener("click", removeItem);
 
-  itemInfo.appendChild(itemTitle);
-  itemInfo.appendChild(itemDomain);
+  itemAnchor.appendChild(itemTitle);
+  itemAnchor.appendChild(itemDomain);
+  itemAnchor.href = url;
+  itemAnchor.target = "_blank";
+  itemAnchor.classList.add("item-anchor");
+
+  itemInfo.appendChild(itemAnchor);
   itemInfo.appendChild(itemRemove);
+  itemInfo.classList.add("item-info");
 
   listItem.appendChild(itemInfo);
 
