@@ -12,10 +12,12 @@
 // See https://developer.chrome.com/extensions/content_scripts
 
 // Log `title` of current active web page
-function addOrRemoveFromReadingList() {
-  // Get the current article title and URL
-  const title = document.title;
-  const url = window.location.href;
+function addOrRemoveFromReadingList(button) {
+  // Get the title and URL of the paper associated with the button
+  const result = button.closest('.gs_ri');
+  const title = result.querySelector('.gs_rt a').innerText;
+  const url = result.querySelector('.gs_rt a').href;
+
 
   // Check if the article is already in the reading list
   chrome.storage.local.get(['readingList'], function(result) {
@@ -42,7 +44,9 @@ for (let i = 0; i < results.length; i++) {
   // Create a new button
   const button = document.createElement('button');
   button.innerHTML = 'Add to reading list';
-  button.addEventListener('click', addOrRemoveFromReadingList);
+  button.addEventListener('click', function() {
+    addOrRemoveFromReadingList(button);
+  });
 
   // Add the button to the result
   result.appendChild(button);
