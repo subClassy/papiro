@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>Google Scholar Reading List</title>
     <link rel="stylesheet" href="popup.css">
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="container">
-      <button id="clear-button">Clear List</button>
-      <h1>Google Scholar Reading List</h1>
-      <ul id="reading-list"></ul>
+        <div class="popup-header">
+            <h1>Google Scholar Reading List</h1>
+            <button id="clear-button">Clear List</button>
+        </div>
+        <ul id="reading-list"></ul>
+        <p id="no-items-msg">No items in reading list</p>
     </div>
 
     <script src="popup.js"></script>
-  </body>
+</body>
+
 </html>
