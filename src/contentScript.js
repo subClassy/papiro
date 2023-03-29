@@ -12,32 +12,38 @@
 // See https://developer.chrome.com/extensions/content_scripts
 
 // Log `title` of current active web page
-const pageTitle = document.head.getElementsByTagName('title')[0].innerHTML;
-console.log(
-  `Page title is: '${pageTitle}' - evaluated by Chrome extension's 'contentScript.js' file`
-);
+function addOrRemoveFromReadingList() {
+  // Get the current article title and URL
+  const title = document.title;
+  const url = window.location.href;
 
-// Communicate with background file by sending a message
-chrome.runtime.sendMessage(
-  {
-    type: 'GREETINGS',
-    payload: {
-      message: 'Hello, my name is Con. I am from ContentScript.',
-    },
-  },
-  (response) => {
-    console.log(response.message);
-  }
-);
+  // Check if the article is already in the reading list
+  chrome.storage.local.get(['readingList'], function(result) {
+      const readingList = result.readingList || [];
+      const index = readingList.findIndex(item => item.url === url);
 
-// Listen for message
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'COUNT') {
-    console.log(`Current count is ${request.payload.count}`);
-  }
+      if (index > -1) {
+          // Remove the article from the reading list
+          readingList.splice(index, 1);
+          chrome.storage.local.set({ readingList: readingList });
+      } else {
+          // Add the article to the reading list
+          readingList.push({ title, url });
+          chrome.storage.local.set({ readingList: readingList });
+      }
+  });
+}
 
-  // Send an empty response
-  // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
-  sendResponse({});
-  return true;
-});
+// Add a button to each search result
+const results = document.getElementsByClassName('gs_ri');
+for (let i = 0; i < results.length; i++) {
+  const result = results[i];
+
+  // Create a new button
+  const button = document.createElement('button');
+  button.innerHTML = 'Add to reading list';
+  button.addEventListener('click', addOrRemoveFromReadingList);
+
+  // Add the button to the result
+  result.appendChild(button);
+}
