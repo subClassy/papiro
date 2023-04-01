@@ -11,6 +11,36 @@
 // For more information on Content Scripts,
 // See https://developer.chrome.com/extensions/content_scripts
 
+// Fetch Papers With Code data
+async function fetchPapersWithCodeData(paperTitle) {
+  const PAPERS_WITH_CODE_URL = `https://paperswithcode.com/api/v1/search/?q=${paperTitle}`;
+  const proxyURL = 'https://cors-anywhere.herokuapp.com/';
+
+  try {
+    const response = await fetch(proxyURL + PAPERS_WITH_CODE_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    var repositoryURL = null;
+    if (data.results.length > 0) {
+      const index = data.results.findIndex(item => item.paper.title.toLowerCase() === paperTitle.toLowerCase());
+      if (index > -1) {
+        const paper = data.results[index];
+        if (paper.repository != null) {
+          repositoryURL = paper.repository.url;
+          return repositoryURL
+        }
+      }
+    }
+    return repositoryURL;
+  } catch (error) {
+    return console.log(error);
+  }
+}
+
 // Log `title` of current active web page
 function addOrRemoveFromReadingList(button) {
   // Get the title and URL of the paper associated with the button
@@ -20,19 +50,16 @@ function addOrRemoveFromReadingList(button) {
 
 
   // Check if the article is already in the reading list
-  chrome.storage.local.get(['readingList'], function(result) {
-      const readingList = result.readingList || [];
-      const index = readingList.findIndex(item => item.url === url);
+  chrome.storage.local.get(['readingList'], async function (result) {
+    const readingList = result.readingList || [];
+    const index = readingList.findIndex(item => item.url === url);
 
-      if (index > -1) {
-          // Remove the article from the reading list
-          readingList.splice(index, 1);
-          chrome.storage.local.set({ readingList: readingList });
-      } else {
-          // Add the article to the reading list
-          readingList.push({ title, url });
-          chrome.storage.local.set({ readingList: readingList });
-      }
+    if (index <= -1) {
+      // Add the article to the reading list
+      const repositoryURL = await fetchPapersWithCodeData(title);
+      readingList.push({ title, url, repositoryURL });
+      chrome.storage.local.set({ readingList: readingList });
+    }
   });
 }
 
@@ -44,7 +71,7 @@ for (let i = 0; i < results.length; i++) {
   // Create a new button
   const button = document.createElement('button');
   button.innerHTML = 'Add to reading list';
-  button.addEventListener('click', function() {
+  button.addEventListener('click', function () {
     addOrRemoveFromReadingList(button);
   });
 

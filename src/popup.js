@@ -23,9 +23,10 @@ function removeItem(event) {
   });
 }
 
-function createListItem(title, url) {
+function createListItem(title, url, repositoryURL) {
   const listItem = document.createElement("li");
   const itemInfo = document.createElement("div");
+  const itemDetails = document.createElement("div");
   const itemAnchor = document.createElement("a")
   const itemTitle = document.createElement("span");
   const itemDomain = document.createElement("span");
@@ -49,8 +50,28 @@ function createListItem(title, url) {
   itemAnchor.href = url;
   itemAnchor.target = "_blank";
   itemAnchor.classList.add("item-anchor");
+  
+  itemDetails.appendChild(itemAnchor);
 
-  itemInfo.appendChild(itemAnchor);
+  if (repositoryURL != null) {
+    const itemAccess = document.createElement("div");
+    const itemAccessLink = document.createElement("a");
+
+    const accessDomainMatch = repositoryURL.match(/^https?:\/\/([^/]+)/);
+    if (accessDomainMatch) {
+      itemAccessLink.textContent = "[Code] " + accessDomainMatch[1];
+    }
+
+    itemAccessLink.href = repositoryURL;
+    itemAccessLink.target = "_blank";
+    itemAccess.appendChild(itemAccessLink);
+    itemAccess.classList.add("item-access");
+    itemDetails.appendChild(itemAccess);
+  }
+
+  itemDetails.classList.add("item-details");
+
+  itemInfo.appendChild(itemDetails);
   itemInfo.appendChild(itemRemove);
   itemInfo.classList.add("item-info");
 
@@ -77,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = 0; i < readingList.length; i++) {
         const item = readingList[i];
-        const listItem = createListItem(item.title, item.url);
+        const listItem = createListItem(item.title, item.url, item.repositoryURL);
 
         readingListItem.appendChild(listItem);
     }

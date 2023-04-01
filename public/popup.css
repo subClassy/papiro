@@ -50,8 +50,6 @@ ul {
 }
 
 li {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
     border-bottom: 1px solid #e6e6e6;
 }
 
@@ -134,4 +132,27 @@ button:active {
     background: no-repeat url(icons/delete.png);
     background-size: 16px 16px;
     opacity: .5;
+}
+
+.item-access a {
+    display: inline-block;
+    margin: 0 12px 0 0;
+    padding: 4px 8px;
+    min-width: 100px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 2px;
+    background-color: #3d9400;
+    background-image: linear-gradient(to bottom,#3d9400,#398a00);
+    border: 1px solid #29691d;
+    text-shadow: 0 1px rgba(0,0,0,.1);
+    transition: all .218s;
+}
+
+.item-access a:link, .item-access a:visited {
+    color: white;
+    text-decoration: none;
+    outline: none;
 }
