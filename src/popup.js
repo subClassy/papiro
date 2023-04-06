@@ -1,112 +1,106 @@
-'use strict';
+function clearList() {
+  const readingList = document.getElementById("reading-list");
+  readingList.innerHTML = "";
+  chrome.storage.local.set({ 'readingList': [] });
 
-import './popup.css';
+  document.getElementById("no-items-msg").style.display = "block";
+}
 
-(function () {
-  // We will make use of Storage API to get and store `count` value
-  // More information on Storage API can we found at
-  // https://developer.chrome.com/extensions/storage
+function removeItem(event) {
+  const readingList = document.getElementById("reading-list");
+  const listItem = event.target.closest("li");
+  const itemIndex = Array.from(readingList.children).indexOf(listItem);
 
-  // To get storage access, we have to mention it in `permissions` property of manifest.json file
-  // More information on Permissions can we found at
-  // https://developer.chrome.com/extensions/declare_permissions
-  const counterStorage = {
-    get: (cb) => {
-      chrome.storage.sync.get(['count'], (result) => {
-        cb(result.count);
-      });
-    },
-    set: (value, cb) => {
-      chrome.storage.sync.set(
-        {
-          count: value,
-        },
-        () => {
-          cb();
-        }
-      );
-    },
-  };
+  chrome.storage.local.get({ readingList: [] }, ({ readingList: items }) => {
+    items.splice(itemIndex, 1);
+    chrome.storage.local.set({ readingList: items });
 
-  function setupCounter(initialValue = 0) {
-    document.getElementById('counter').innerHTML = initialValue;
-
-    document.getElementById('incrementBtn').addEventListener('click', () => {
-      updateCounter({
-        type: 'INCREMENT',
-      });
-    });
-
-    document.getElementById('decrementBtn').addEventListener('click', () => {
-      updateCounter({
-        type: 'DECREMENT',
-      });
-    });
-  }
-
-  function updateCounter({ type }) {
-    counterStorage.get((count) => {
-      let newCount;
-
-      if (type === 'INCREMENT') {
-        newCount = count + 1;
-      } else if (type === 'DECREMENT') {
-        newCount = count - 1;
-      } else {
-        newCount = count;
-      }
-
-      counterStorage.set(newCount, () => {
-        document.getElementById('counter').innerHTML = newCount;
-
-        // Communicate with content script of
-        // active tab by sending a message
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          const tab = tabs[0];
-
-          chrome.tabs.sendMessage(
-            tab.id,
-            {
-              type: 'COUNT',
-              payload: {
-                count: newCount,
-              },
-            },
-            (response) => {
-              console.log('Current count value passed to contentScript file');
-            }
-          );
-        });
-      });
-    });
-  }
-
-  function restoreCounter() {
-    // Restore count value
-    counterStorage.get((count) => {
-      if (typeof count === 'undefined') {
-        // Set counter value as 0
-        counterStorage.set(0, () => {
-          setupCounter(0);
-        });
-      } else {
-        setupCounter(count);
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', restoreCounter);
-
-  // Communicate with background file by sending a message
-  chrome.runtime.sendMessage(
-    {
-      type: 'GREETINGS',
-      payload: {
-        message: 'Hello, my name is Pop. I am from Popup.',
-      },
-    },
-    (response) => {
-      console.log(response.message);
+    if (items.length === 0) {
+      document.getElementById("no-items-msg").style.display = "block";
     }
-  );
-})();
+
+    listItem.remove();
+  });
+}
+
+function createListItem(title, url, repositoryURL) {
+  const listItem = document.createElement("li");
+  const itemInfo = document.createElement("div");
+  const itemDetails = document.createElement("div");
+  const itemAnchor = document.createElement("a")
+  const itemTitle = document.createElement("span");
+  const itemDomain = document.createElement("span");
+  const itemRemove = document.createElement("span");
+
+  itemTitle.textContent = title;
+  itemTitle.classList.add("item-title");
+
+  const domainMatch = url.match(/^https?:\/\/([^/]+)/);
+  if (domainMatch) {
+    itemDomain.textContent = domainMatch[1];
+    itemDomain.classList.add("item-domain");
+  }
+
+  // itemRemove.textContent = "X";
+  itemRemove.classList.add("item-remove");
+  itemRemove.addEventListener("click", removeItem);
+
+  itemAnchor.appendChild(itemTitle);
+  itemAnchor.appendChild(itemDomain);
+  itemAnchor.href = url;
+  itemAnchor.target = "_blank";
+  itemAnchor.classList.add("item-anchor");
+  
+  itemDetails.appendChild(itemAnchor);
+
+  if (repositoryURL != null) {
+    const itemAccess = document.createElement("div");
+    const itemAccessLink = document.createElement("a");
+
+    const accessDomainMatch = repositoryURL.match(/^https?:\/\/([^/]+)/);
+    if (accessDomainMatch) {
+      itemAccessLink.textContent = "[Code] " + accessDomainMatch[1];
+    }
+
+    itemAccessLink.href = repositoryURL;
+    itemAccessLink.target = "_blank";
+    itemAccess.appendChild(itemAccessLink);
+    itemAccess.classList.add("item-access");
+    itemDetails.appendChild(itemAccess);
+  }
+
+  itemDetails.classList.add("item-details");
+
+  itemInfo.appendChild(itemDetails);
+  itemInfo.appendChild(itemRemove);
+  itemInfo.classList.add("item-info");
+
+  listItem.appendChild(itemInfo);
+
+  return listItem;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const readingListItem = document.getElementById("reading-list");
+  const clearButton = document.getElementById("clear-button");
+  clearButton.addEventListener("click", clearList);
+
+  // Get the reading list from local storage
+  chrome.storage.local.get(['readingList'], function(result) {
+    const readingList = result.readingList || [];
+
+    if (readingList.length > 0) {
+      document.getElementById("no-items-msg").style.display = "none";
+    }
+
+    // Update the popup with the reading list
+    readingListItem.innerHTML = '';
+
+    for (let i = 0; i < readingList.length; i++) {
+        const item = readingList[i];
+        const listItem = createListItem(item.title, item.url, item.repositoryURL);
+
+        readingListItem.appendChild(listItem);
+    }
+  });
+});
