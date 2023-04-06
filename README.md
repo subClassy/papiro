@@ -1,11 +1,9 @@
 # <img src="public/icons/icon_48.png" width="45" align="left"> Scholar Mate
 
-My Chrome Extension
-
-## Features
-
-- Feature 1
-- Feature 2
+# Scholar Mate 
+A Chrome extension to help you with your research. You can now add your favorite
+papers to your reading list and access them anytime. Once you add them to your
+reading list, you can also any available code implementation for that paper.
 
 ## Install
 
@@ -13,7 +11,7 @@ My Chrome Extension
 
 ## Contribution
 
-Suggestions and pull requests are welcomed!.
+Suggestions and pull requests are welcomed!
 
 ---
 
