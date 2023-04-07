@@ -158,6 +158,12 @@ button:active {
     outline: none;
 }
 
+.item-tag-container {
+    margin-top: 2px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
 .item-tag-input {
     vertical-align: top;
     box-sizing: border-box;
@@ -171,7 +177,6 @@ button:active {
     border-top: 1px solid #c0c0c0;
     padding: 3px 8px 1px 8px;
     border-radius: 5px;
-    margin-top: 2px;
 }
 
 .item-tag-input:hover {
@@ -182,4 +187,22 @@ button:active {
 
 .item-details {
     width: 90%;
+}
+
+.item-label {
+    display: inline-block;
+    margin: 0 12px 0 0;
+    padding: 4px 8px;
+    min-width: 50px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 5px;
+    background-color: #00a2cf;
+    background-image: linear-gradient(to bottom, #00a2cf, #0199c3);
+    border: 1px solid #0b5176;
+    text-shadow: 0 1px rgba(0, 0, 0, .1);
+    transition: all .218s;
+    color: white;
 }
