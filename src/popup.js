@@ -73,14 +73,6 @@ function createListItem(title, url, repositoryURL, tags) {
 
   itemDetails.classList.add("item-details");
 
-  // Add the tags to the item
-  for (let i = 0; i < tags.length; i++) {
-    const label = document.createElement("div");
-    label.classList.add("item-label");
-    label.textContent = tags[i];
-    itemTagContainer.appendChild(label);
-  }
-
   if (tags.length < 2) {
     itemTagInput.type = "text";
     itemTagInput.placeholder = "Add Tags";
@@ -91,6 +83,31 @@ function createListItem(title, url, repositoryURL, tags) {
     tagEventListener(itemTagInput, itemTagContainer, url);
 
     itemTagContainer.appendChild(itemTagInput);
+  }
+
+  // Add the tags to the item
+  for (let i = 0; i < tags.length; i++) {
+    const label = document.createElement("div");
+    label.classList.add("item-label");
+    label.textContent = tags[i];
+    const newLabelRemoveBtn = document.createElement("button");
+    newLabelRemoveBtn.innerHTML = "x";
+    newLabelRemoveBtn.classList.add("item-remove-label");
+    newLabelRemoveBtn.addEventListener("click", () => {
+      // Remove the label from the UI
+      label.remove();
+
+      chrome.storage.local.get({ readingList: [] }, ({ readingList: items }) => {
+        const index = items.findIndex(item => item.url === url);
+        if (index !== -1) {
+          items[index].tags.splice(i, 1);
+          chrome.storage.local.set({ readingList: items });
+        }
+      });
+    });
+    label.appendChild(newLabelRemoveBtn);
+
+    itemTagContainer.appendChild(label);
   }
 
   itemTagContainer.classList.add("item-tag-container");

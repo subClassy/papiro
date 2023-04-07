@@ -205,4 +205,16 @@ button:active {
     text-shadow: 0 1px rgba(0, 0, 0, .1);
     transition: all .218s;
     color: white;
+    position: relative;
+}
+
+.item-remove-label {
+    color: black;
+    background: none;
+    top: 0;
+    position: absolute;
+    right: 0;
+    z-index: 999999;
+    display: block;
+    padding: 0;
 }
