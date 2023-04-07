@@ -161,7 +161,8 @@ button:active {
 .item-tag-container {
     margin-top: 2px;
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
+    overflow: auto;
 }
 
 .item-tag-input {
@@ -177,6 +178,7 @@ button:active {
     border-top: 1px solid #c0c0c0;
     padding: 3px 8px 1px 8px;
     border-radius: 5px;
+    min-width: 80px;
 }
 
 .item-tag-input:hover {
@@ -190,31 +192,42 @@ button:active {
 }
 
 .item-label {
-    display: inline-block;
-    margin: 0 12px 0 0;
+    position: relative;
+    float: left;
+    text-transform: capitalize;
+    background-color: #E8F5E9;
+    line-height: 1rem;
     padding: 4px 8px;
-    min-width: 50px;
-    text-align: center;
-    white-space: nowrap;
+    border-radius: 5px;
+    margin-right: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
-    border-radius: 5px;
-    background-color: #00a2cf;
-    background-image: linear-gradient(to bottom, #00a2cf, #0199c3);
-    border: 1px solid #0b5176;
-    text-shadow: 0 1px rgba(0, 0, 0, .1);
-    transition: all .218s;
-    color: white;
-    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    min-width: 60px;
+    line-height: 20px;
+    padding-right: 30px;
 }
 
 .item-remove-label {
-    color: black;
-    background: none;
-    top: 0;
     position: absolute;
+    margin: 0.25rem;
+    top: 0;
     right: 0;
-    z-index: 999999;
-    display: block;
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 16px;
+    line-height: 6px;
+    text-align: center;
+    background-color: #C8E6C9;
+    cursor: pointer;
+    -webkit-transition: 0.3s all;
+    transition: 0.3s all;
     padding: 0;
+}
+
+.item-remove-label:hover {
+    background-color: #ef9a9a;
 }

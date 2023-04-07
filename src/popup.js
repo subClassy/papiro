@@ -73,41 +73,20 @@ function createListItem(title, url, repositoryURL, tags) {
 
   itemDetails.classList.add("item-details");
 
-  if (tags.length < 2) {
-    itemTagInput.type = "text";
-    itemTagInput.placeholder = "Add Tags";
-    itemTagInput.classList.add("item-tag-input");
-    itemTagInput.id = "item-tag-input-" + title;
+  itemTagInput.type = "text";
+  itemTagInput.placeholder = "Add Tags";
+  itemTagInput.classList.add("item-tag-input");
+  itemTagInput.id = "item-tag-input-" + title;
 
-    // Add event listener to the label input field
-    tagEventListener(itemTagInput, itemTagContainer, url);
+  // Add event listener to the label input field
+  tagEventListener(itemTagInput, itemTagContainer, url);
 
-    itemTagContainer.appendChild(itemTagInput);
-  }
+  itemTagContainer.appendChild(itemTagInput);
 
   // Add the tags to the item
   for (let i = 0; i < tags.length; i++) {
-    const label = document.createElement("div");
-    label.classList.add("item-label");
-    label.textContent = tags[i];
-    const newLabelRemoveBtn = document.createElement("button");
-    newLabelRemoveBtn.innerHTML = "x";
-    newLabelRemoveBtn.classList.add("item-remove-label");
-    newLabelRemoveBtn.addEventListener("click", () => {
-      // Remove the label from the UI
-      label.remove();
-
-      chrome.storage.local.get({ readingList: [] }, ({ readingList: items }) => {
-        const index = items.findIndex(item => item.url === url);
-        if (index !== -1) {
-          items[index].tags.splice(i, 1);
-          chrome.storage.local.set({ readingList: items });
-        }
-      });
-    });
-    label.appendChild(newLabelRemoveBtn);
-
-    itemTagContainer.appendChild(label);
+    const label = createLabel(tags[i], url);
+    itemTagContainer.insertBefore(label, itemTagContainer.firstChild);
   }
 
   itemTagContainer.classList.add("item-tag-container");
@@ -148,6 +127,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+function createLabel(text, url) {
+  const label = document.createElement("div");
+  label.classList.add("item-label");
+  label.textContent = text;
+
+  const newLabelRemoveBtn = document.createElement("button");
+  newLabelRemoveBtn.innerHTML = "x";
+  newLabelRemoveBtn.classList.add("item-remove-label");
+  newLabelRemoveBtn.addEventListener("click", () => {
+    // Remove the label from the UI
+    label.remove();
+
+    chrome.storage.local.get({ readingList: [] }, ({ readingList: items }) => {
+      const index = items.findIndex(item => item.url === url);
+      console.log(index);
+      if (index !== -1) {
+        const i = items[index].tags.findIndex(tag => tag === text);
+        items[index].tags.splice(i, 1);
+        chrome.storage.local.set({ readingList: items });
+      }
+    });
+  });
+  label.appendChild(newLabelRemoveBtn);
+
+  return label;
+}
+
+
 function tagEventListener(itemTagInput, itemTagContainer, url) {
   itemTagInput.addEventListener("keyup", (event) => {
     // Check if enter key was pressed
@@ -155,10 +162,8 @@ function tagEventListener(itemTagInput, itemTagContainer, url) {
       const labelName = itemTagInput.value.trim();
       if (labelName !== "") {
         // Create a new label element and append it to the labels container
-        const label = document.createElement("div");
-        label.classList.add("item-label");
-        label.textContent = labelName;
-        itemTagContainer.appendChild(label);
+        const label = createLabel(labelName, url);
+        itemTagContainer.insertBefore(label, itemTagContainer.firstChild);
 
         chrome.storage.local.get({ readingList: [] }, ({ readingList: items }) => {
           const index = items.findIndex(item => item.url === url);
