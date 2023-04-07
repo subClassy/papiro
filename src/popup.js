@@ -31,6 +31,7 @@ function createListItem(title, url, repositoryURL) {
   const itemTitle = document.createElement("span");
   const itemDomain = document.createElement("span");
   const itemRemove = document.createElement("span");
+  const itemTagInput = document.createElement("input");
 
   itemTitle.textContent = title;
   itemTitle.classList.add("item-title");
@@ -70,6 +71,13 @@ function createListItem(title, url, repositoryURL) {
   }
 
   itemDetails.classList.add("item-details");
+
+  itemTagInput.type = "text";
+  itemTagInput.placeholder = "Add Tags";
+  itemTagInput.classList.add("item-tag-input");
+  itemTagInput.id = "item-tag-input-" + title;
+
+  itemDetails.appendChild(itemTagInput);
 
   itemInfo.appendChild(itemDetails);
   itemInfo.appendChild(itemRemove);
