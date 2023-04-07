@@ -57,7 +57,7 @@ function addOrRemoveFromReadingList(button) {
     if (index <= -1) {
       // Add the article to the reading list
       const repositoryURL = await fetchPapersWithCodeData(title);
-      readingList.push({ title, url, repositoryURL });
+      readingList.push({ title, url, repositoryURL, tags: [] });
       chrome.storage.local.set({ readingList: readingList });
     }
   });

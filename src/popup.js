@@ -23,7 +23,7 @@ function removeItem(event) {
   });
 }
 
-function createListItem(title, url, repositoryURL) {
+function createListItem(title, url, repositoryURL, tags) {
   const listItem = document.createElement("li");
   const itemInfo = document.createElement("div");
   const itemDetails = document.createElement("div");
@@ -31,6 +31,8 @@ function createListItem(title, url, repositoryURL) {
   const itemTitle = document.createElement("span");
   const itemDomain = document.createElement("span");
   const itemRemove = document.createElement("span");
+  const itemTagContainer = document.createElement("div");
+  const itemTagInput = document.createElement("input");
 
   itemTitle.textContent = title;
   itemTitle.classList.add("item-title");
@@ -50,7 +52,7 @@ function createListItem(title, url, repositoryURL) {
   itemAnchor.href = url;
   itemAnchor.target = "_blank";
   itemAnchor.classList.add("item-anchor");
-  
+
   itemDetails.appendChild(itemAnchor);
 
   if (repositoryURL != null) {
@@ -71,6 +73,25 @@ function createListItem(title, url, repositoryURL) {
 
   itemDetails.classList.add("item-details");
 
+  itemTagInput.type = "text";
+  itemTagInput.placeholder = "Add Tags";
+  itemTagInput.classList.add("item-tag-input");
+  itemTagInput.id = "item-tag-input-" + title;
+
+  // Add event listener to the label input field
+  tagEventListener(itemTagInput, itemTagContainer, url);
+
+  itemTagContainer.appendChild(itemTagInput);
+
+  // Add the tags to the item
+  for (let i = 0; i < tags.length; i++) {
+    const label = createLabel(tags[i], url);
+    itemTagContainer.insertBefore(label, itemTagContainer.firstChild);
+  }
+
+  itemTagContainer.classList.add("item-tag-container");
+  itemDetails.appendChild(itemTagContainer);
+
   itemInfo.appendChild(itemDetails);
   itemInfo.appendChild(itemRemove);
   itemInfo.classList.add("item-info");
@@ -86,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
   clearButton.addEventListener("click", clearList);
 
   // Get the reading list from local storage
-  chrome.storage.local.get(['readingList'], function(result) {
+  chrome.storage.local.get(['readingList'], function (result) {
     const readingList = result.readingList || [];
 
     if (readingList.length > 0) {
@@ -97,10 +118,64 @@ document.addEventListener("DOMContentLoaded", () => {
     readingListItem.innerHTML = '';
 
     for (let i = 0; i < readingList.length; i++) {
-        const item = readingList[i];
-        const listItem = createListItem(item.title, item.url, item.repositoryURL);
+      const item = readingList[i];
+      const listItem = createListItem(item.title, item.url, item.repositoryURL, item.tags);
 
-        readingListItem.appendChild(listItem);
+      readingListItem.appendChild(listItem);
     }
   });
 });
+
+
+function createLabel(text, url) {
+  const label = document.createElement("div");
+  label.classList.add("item-label");
+  label.textContent = text;
+
+  const newLabelRemoveBtn = document.createElement("button");
+  newLabelRemoveBtn.innerHTML = "x";
+  newLabelRemoveBtn.classList.add("item-remove-label");
+  newLabelRemoveBtn.addEventListener("click", () => {
+    // Remove the label from the UI
+    label.remove();
+
+    chrome.storage.local.get({ readingList: [] }, ({ readingList: items }) => {
+      const index = items.findIndex(item => item.url === url);
+      console.log(index);
+      if (index !== -1) {
+        const i = items[index].tags.findIndex(tag => tag === text);
+        items[index].tags.splice(i, 1);
+        chrome.storage.local.set({ readingList: items });
+      }
+    });
+  });
+  label.appendChild(newLabelRemoveBtn);
+
+  return label;
+}
+
+
+function tagEventListener(itemTagInput, itemTagContainer, url) {
+  itemTagInput.addEventListener("keyup", (event) => {
+    // Check if enter key was pressed
+    if (event.key === 'Enter') {
+      const labelName = itemTagInput.value.trim();
+      if (labelName !== "") {
+        // Create a new label element and append it to the labels container
+        const label = createLabel(labelName, url);
+        itemTagContainer.insertBefore(label, itemTagContainer.firstChild);
+
+        chrome.storage.local.get({ readingList: [] }, ({ readingList: items }) => {
+          const index = items.findIndex(item => item.url === url);
+          if (index !== -1) {
+            items[index].tags.push(labelName);
+            chrome.storage.local.set({ readingList: items });
+          }
+        });
+
+        // Clear the input field
+        itemTagInput.value = "";
+      }
+    }
+  });
+}
