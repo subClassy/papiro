@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Scholar Mate",
+  "name": "Papiro",
   "version": "0.1.0",
   "description": "Reading List for Google Scholar",
   "icons": {
@@ -13,7 +13,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Scholar Mate",
+    "default_title": "Papiro",
     "default_popup": "popup.html"
   },
   "permissions": [
