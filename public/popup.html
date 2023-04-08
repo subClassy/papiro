@@ -9,8 +9,18 @@
 <body>
     <div class="container">
         <div class="popup-header">
-            <h1>Papiro</h1>
-            <button id="clear-button">Clear List</button>
+            <div class="header">
+                <img src="icons/icon_48.png" alt="Papiro Logo">
+                <h1>Papiro</h1>
+            </div>
+            <!-- replace the button with an icon of a dustbin -->
+            <button id="clear-button" class="clear-button">
+                <svg class="icon-trash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 40" width="40" height="40">
+                    <path class="trash-lid" fill-rule="evenodd"
+                        d="M6 15l4 0 0-3 8 0 0 3 4 0 0 2 -16 0zM12 14l4 0 0 1 -4 0z" />
+                    <path class="trash-can" d="M8 17h2v9h8v-9h2v9a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" />
+                </svg>
+            </button>
         </div>
         <ul id="reading-list"></ul>
         <p id="no-items-msg">No items in reading list</p>
