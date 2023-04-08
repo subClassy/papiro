@@ -70,7 +70,26 @@ for (let i = 0; i < results.length; i++) {
 
   // Create a new button
   const button = document.createElement('button');
-  button.innerHTML = 'Add to reading list';
+  button.innerHTML = 'Add to Papiro';
+
+  button.style.marginTop = '10px';
+  button.style.color = '#1A0DAB';
+  button.style.backgroundColor = '#fff';
+  button.style.border = '1px solid #1A0DAB';
+  button.style.borderRadius = '5px';
+  button.style.padding = '5px 10px';
+  button.style.transition = 'background-color 0.2s';
+
+  button.onmouseover = function () {
+    button.style.backgroundColor = '#1A0DAB';
+    button.style.color = '#fff';
+  };
+
+  button.onmouseout = function () {
+    button.style.backgroundColor = '#fff';
+    button.style.color = '#1A0DAB';
+  };
+  // Add event handler for this button
   button.addEventListener('click', function () {
     addOrRemoveFromReadingList(button);
   });
