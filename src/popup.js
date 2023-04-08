@@ -3,7 +3,7 @@ function clearList() {
   readingList.innerHTML = "";
   chrome.storage.local.set({ 'readingList': [] });
 
-  document.getElementById("no-items-msg").style.display = "block";
+  document.getElementById("no-items-msg").style.display = "flex";
 }
 
 function removeItem(event) {
@@ -16,7 +16,7 @@ function removeItem(event) {
     chrome.storage.local.set({ readingList: items });
 
     if (items.length === 0) {
-      document.getElementById("no-items-msg").style.display = "block";
+      document.getElementById("no-items-msg").style.display = "flex";
     }
 
     listItem.remove();

@@ -276,3 +276,24 @@ button:active {
 .item-remove-label:hover {
     background-color: #ef9a9a;
 }
+
+#no-items-msg {
+    position: absolute;
+    top: 30%;
+    left: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#no-items-msg p {
+    font-size: 20px;
+    font-weight: bold;
+    color: #444444;
+}
+
+#no-items-msg img {
+    width: 35%;
+    margin-bottom: 12px;
+}
